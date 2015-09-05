@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/open"
+        android:title="Open"/>
+
+    <item
+        android:id="@+id/clip_cancel"
+        android:icon="@android:drawable/ic_delete"
+        android:title="Cancel"/>
+
+</menu>

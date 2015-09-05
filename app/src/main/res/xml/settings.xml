@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+
+    <SwitchPreference
+        android:defaultValue="true"
+        android:key="showSubFolder"
+        android:selectable="true"
+        android:summaryOn="Sub folder showing in file list window."
+        android:title="Show folder in file-list"/>
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="showNotReadable"
+        android:selectable="true"
+        android:summaryOn="Not readable files showing."
+        android:title="Show not readable files"/>
+
+
+
+    <!-- <PreferenceCategory android:title="Process monitor ic_settings"/> -->
+
+
+    <ListPreference
+        android:defaultValue="NAME"
+        android:entries="@array/sortConditionLabel"
+        android:entryValues="@array/sortCondition"
+        android:key="sortCondition"
+        android:title="Sort condition"/>
+
+
+
+</PreferenceScreen>

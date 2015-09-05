@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="36dp"
+                android:descendantFocusability="blocksDescendants"
+                android:paddingBottom="2dp"
+                android:paddingTop="2dp">
+
+    <ImageView
+        android:id="@+id/toggle"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:padding="4dp"
+        android:scaleType="fitCenter"
+        android:src="@drawable/triangle_right"
+        />
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/toggle"
+        android:padding="4dp"
+        android:src="@drawable/folder"/>
+
+    <ImageView
+        android:id="@+id/cannotWrite"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@+id/title"
+        android:layout_toStartOf="@+id/title"
+        android:padding="2dp"
+        android:src="@drawable/forbid"/>
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@id/icon"
+        android:ellipsize="middle"
+        android:maxLines="1"
+        android:singleLine="true"
+        android:text="title"
+        android:textSize="16dp"
+        android:textStyle="bold"/>
+
+</RelativeLayout>

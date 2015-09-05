@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="36dp"
+    android:descendantFocusability="blocksDescendants">
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:padding="4dp"
+        android:src="@drawable/file_normal"/>
+
+    <ImageView
+        android:id="@+id/cannotWrite"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@+id/title"
+        android:layout_toStartOf="@+id/title"
+        android:padding="2dp"
+        android:src="@drawable/forbid"/>
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="3dp"
+        android:layout_toRightOf="@+id/icon"
+        android:ellipsize="middle"
+        android:lines="1"
+        android:singleLine="true"
+        android:text="title"
+        android:textColor="#000000"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        />
+
+    <TextView
+        android:id="@+id/size"
+        android:layout_width="48sp"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:gravity="right"
+        android:paddingRight="4dp"
+        android:text="99999"
+        android:textColor="#000000"
+        android:textSize="12sp"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/datetime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_toLeftOf="@id/size"
+        android:text="yyyy/mm/dd hh:mm:ss"
+        android:textColor="#000000"
+        android:textSize="12sp"
+        android:textStyle="bold"/>
+
+</RelativeLayout>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/copy_from_clip"
+        android:icon="@drawable/ic_copy"
+        android:title="Copy from clip"/>
+
+    <item
+        android:id="@+id/move_from_clip"
+        android:icon="@drawable/ic_cut"
+        android:title="Move from clip"/>
+
+    <item
+        android:id="@+id/bookmark"
+        android:icon="@drawable/ic_bookmark"
+        android:title="Bookmark"/>
+
+    <item
+        android:id="@+id/rename"
+        android:icon="@drawable/ic_rename"
+        android:title="Rename"/>
+
+    <item
+        android:id="@+id/delete"
+        android:icon="@drawable/ic_trash"
+        android:title="Delete"/>
+
+</menu>
