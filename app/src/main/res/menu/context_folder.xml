@@ -3,12 +3,12 @@
     <item
         android:id="@+id/copy_from_clip"
         android:icon="@drawable/ic_copy"
-        android:title="Copy from clip"/>
+        android:title="Folder &lt;- Clip" />
 
     <item
         android:id="@+id/move_from_clip"
         android:icon="@drawable/ic_cut"
-        android:title="Move from clip"/>
+        android:title="Folder &lt;- Clip (Move)"/>
 
     <item
         android:id="@+id/bookmark"

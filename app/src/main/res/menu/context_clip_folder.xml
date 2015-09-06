@@ -1,16 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/clip_copy_to_folder"
-        android:icon="@drawable/ic_copy"
-        android:title="Copy to folder"/>
-
-    <item
-        android:id="@+id/clip_move_to_folder"
-        android:icon="@drawable/ic_cut"
-        android:title="Move to folder"/>
-
-    <item
         android:id="@+id/clip_bookmark_all"
         android:icon="@drawable/ic_bookmark"
         android:title="Bookmark all"/>

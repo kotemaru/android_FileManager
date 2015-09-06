@@ -6,26 +6,22 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import org.kotemaru.android.filemanager.MyApplication;
 import org.kotemaru.android.filemanager.R;
-import org.kotemaru.android.filemanager.logic.ActionManager;
 import org.kotemaru.android.filemanager.persistent.Settings;
 import org.kotemaru.android.filemanager.fragment.FilesFragment;
 
 public class MainActivity extends Activity {
-
+    private final MyApplication myApp = MyApplication.getInstance();
     private boolean mClipMode;
-    private ActionManager mActionManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        mActionManager = new ActionManager(this);
+        myApp.setMainActivity(this);
     }
 
-    public ActionManager getActionManager() {
-        return mActionManager;
-    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

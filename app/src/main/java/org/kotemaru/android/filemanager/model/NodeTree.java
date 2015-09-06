@@ -9,6 +9,7 @@ import java.util.List;
 public class NodeTree {
     ArrayList<Node> mTopLevelList = new ArrayList<Node>(); // TODO:チューニング
     ArrayList<Node> mList = new ArrayList<Node>(); // TODO:チューニング
+    private Node mSelected;
 
     public NodeTree() {
     }
@@ -66,9 +67,11 @@ public class NodeTree {
     }
 
     public Node select(int index) {
-        for (Node node : mList) node.setSelected(false);
-        Node node = mList.get(index);
-        node.setSelected(true);
-        return node;
+        mSelected = mList.get(index);
+        return mSelected;
     }
+    public boolean isSelected(Node node) {
+        return mSelected == node;
+    }
+
 }

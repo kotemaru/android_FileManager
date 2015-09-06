@@ -92,29 +92,15 @@ public class Settings {
         edit.apply();
     }
 
-    public static List<Node> getBookmarks(BookmarkFolderNode parent) {
-        String val = getSharedPrefs().getString("bookmarks", "");
-        String[] parts = val.split("\n");
-        List<Node> list = new ArrayList<Node>();
-        for (String url : parts) {
-            url = url.trim();
-            try {
-                if (!url.isEmpty()) list.add(NodeUtil.createNodeFromUrl(parent, url));
-            }catch (IllegalArgumentException e) {
-                Log.w(TAG, "Bad bookmark url=" + url, e);
-            }
-        }
-        return list;
+    public static BookmarkFolderNode getBookmarks(BookmarkFolderNode bookmarks) {
+        String val = getSharedPrefs().getString("bookmarks", "[]");
+        bookmarks.fromJson(val);
+        return bookmarks;
     }
 
-    public static void setBookmarks(List<Node> bookmarks) {
-        StringBuilder sbuf = new StringBuilder();
-        for (Node folder : bookmarks) {
-            sbuf.append(folder.getUri().toString()).append('\n');
-        }
-
+    public static void setBookmarks(BookmarkFolderNode bookmarks) {
         SharedPreferences.Editor edit = getSharedPrefs().edit();
-        edit.putString("bookmarks", sbuf.toString());
+        edit.putString("bookmarks", bookmarks.toJson());
         edit.apply();
     }
 }

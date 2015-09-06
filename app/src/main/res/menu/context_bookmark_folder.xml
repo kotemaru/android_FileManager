@@ -5,4 +5,12 @@
         android:id="@+id/bookmark_new_folder"
         android:icon="@drawable/ic_new"
         android:title="New bookmark folder"/>
+    <item
+        android:id="@+id/bookmark_rename"
+        android:title="Rename"/>
+
+    <item
+        android:id="@+id/bookmark_from_clip"
+        android:icon="@drawable/ic_clip"
+        android:title="Bookmark &lt;- Clip"/>
 </menu>

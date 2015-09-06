@@ -20,15 +20,13 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.kotemaru.android.filemanager.MyApplication;
 import org.kotemaru.android.filemanager.R;
-import org.kotemaru.android.filemanager.activity.MainActivity;
-import org.kotemaru.android.filemanager.logic.ActionManager;
 import org.kotemaru.android.filemanager.model.Node;
 import org.kotemaru.android.filemanager.model.NodeUtil;
 import org.kotemaru.android.filemanager.persistent.Settings;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Stack;
@@ -38,6 +36,7 @@ import java.util.Stack;
  */
 public class FilesFragment extends Fragment {
     private static final String TAG = "FilesFragment";
+    private final MyApplication myApp = MyApplication.getInstance();
     private ListView mListView;
     private View mNoFiles;
     private FilesAdapter mFilesAdapter;
@@ -60,7 +59,7 @@ public class FilesFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
                 Node node = mFilesAdapter.getNode(position);
-                getActionManager().onClick(false, node);
+                myApp.getActionManager().onClick(false, node);
             }
         });
 
@@ -148,14 +147,6 @@ public class FilesFragment extends Fragment {
     }
 
 
-    public boolean hasSelectedFile() {
-        return mFilesAdapter.hasSelectedFile();
-    }
-
-    public List<Node> getSelectedFile() {
-        return mFilesAdapter.getSelectedFile();
-    }
-
 
     class FilesAdapter extends BaseAdapter {
         private LayoutInflater mInflater = getActivity().getLayoutInflater();
@@ -182,23 +173,6 @@ public class FilesFragment extends Fragment {
             mNoFiles.setVisibility(mNodeList.isEmpty() ? View.VISIBLE : View.INVISIBLE);
             NodeUtil.sort(mNodeList);
             notifyDataSetChanged();
-        }
-
-        public boolean hasSelectedFile() {
-            if (mNodeList == null) return false;
-            for (Node fileItem : mNodeList) {
-                if (fileItem.isSelected()) return true;
-            }
-            return false;
-        }
-
-        public List<Node> getSelectedFile() {
-            List<Node> list = new ArrayList<Node>(10);
-            if (mNodeList == null) return list;
-            for (Node fileItem : mNodeList) {
-                if (fileItem.isSelected()) list.add(fileItem);
-            }
-            return list;
         }
 
         @Override
@@ -229,15 +203,20 @@ public class FilesFragment extends Fragment {
             ListItemInfo info = (ListItemInfo) view.getTag();
             info.position = position;
 
-            Node fileItem = getNode(position);
-            info.title.setText(fileItem.getTitle());
-            info.size.setText(getSizeStr(fileItem));
-            info.datetime.setText(getDatetimeStr(fileItem));
-            info.icon.setImageDrawable(fileItem.getIcon(getActivity()));
-            view.setSelected(fileItem.isSelected());
-            view.setBackgroundColor(fileItem.isSelected() ? Color.CYAN : Color.LTGRAY); // TODO:リソース化
-            view.setAlpha(fileItem.isReadable() ? 1.0F : 0.2F);
-            info.cannotWrite.setVisibility(fileItem.isWritable() ? View.INVISIBLE : View.VISIBLE);
+            Node node = getNode(position);
+            boolean isClipped = myApp.getClipFolderNode().isLinkedChild(node);
+
+            info.title.setText(node.getTitle());
+            info.size.setText(getSizeStr(node));
+            info.datetime.setText(getDatetimeStr(node));
+            info.icon.setImageDrawable(node.getIcon(getActivity()));
+            info.clipped.setVisibility(isClipped ? View.VISIBLE : View.INVISIBLE);
+            info.bookmarked.setVisibility(node.getNodeType() == Node.NodeType.BOOKMARK ? View.VISIBLE : View.INVISIBLE);
+
+            view.setSelected(isClipped);
+            view.setBackgroundColor(isClipped ? Color.CYAN : Color.LTGRAY); // TODO:リソース化
+            view.setAlpha(node.isReadable() ? 1.0F : 0.2F);
+            info.cannotWrite.setVisibility(node.isWritable() ? View.INVISIBLE : View.VISIBLE);
             return view;
         }
 
@@ -248,6 +227,8 @@ public class FilesFragment extends Fragment {
             info.size = (TextView) view.findViewById(R.id.size);
             info.datetime = (TextView) view.findViewById(R.id.datetime);
             info.icon = (ImageView) view.findViewById(R.id.icon);
+            info.clipped = (ImageView) view.findViewById(R.id.clipped);
+            info.bookmarked = (ImageView) view.findViewById(R.id.bookmarked);
             info.cannotWrite = (ImageView) view.findViewById(R.id.cannotWrite);
             view.setTag(info);
             return view;
@@ -259,6 +240,8 @@ public class FilesFragment extends Fragment {
         int position;
         TextView title;
         ImageView icon;
+        ImageView clipped;
+        ImageView bookmarked;
         ImageView cannotWrite;
         TextView size;
         TextView datetime;
@@ -278,10 +261,6 @@ public class FilesFragment extends Fragment {
         return fmt.format(new Date(time));
     }
 
-    private ActionManager getActionManager() {
-        return ((MainActivity)getActivity()).getActionManager();
-    }
-
     @Override
     public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
         Log.d("TAG", "onCreateContextMenu");
@@ -289,7 +268,7 @@ public class FilesFragment extends Fragment {
         if (view.getId() == R.id.files) {
             AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
             Node node = mFilesAdapter.getNode(info.position);
-            getActionManager().createContextMenu(menu, node);
+            myApp.getActionManager().createContextMenu(menu, node);
         }
     }
 
@@ -297,7 +276,8 @@ public class FilesFragment extends Fragment {
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         Node node = mFilesAdapter.getNode(info.position);
-        return getActionManager().doMenuAction(item, node);
+        Log.d(TAG,"onContextItemSelected:"+item);
+        return myApp.getActionManager().doMenuAction(item, node);
     }
 
 }

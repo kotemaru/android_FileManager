@@ -1,6 +1,12 @@
 package org.kotemaru.android.filemanager.model;
 
 
+import org.kotemaru.android.filemanager.util.FileUtil;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+
 public abstract class BaseNode implements Node {
     protected final Node mParent;
     protected boolean mIsOpened;
@@ -37,16 +43,6 @@ public abstract class BaseNode implements Node {
     }
 
     @Override
-    public boolean isSelected() {
-        return mIsSelected;
-    }
-
-    @Override
-    public void setSelected(boolean selected) {
-        mIsSelected = selected;
-    }
-
-    @Override
     public boolean isOpened() {
         return mIsOpened;
     }
@@ -70,5 +66,33 @@ public abstract class BaseNode implements Node {
     @Override
     public long getLastModified() {
         return 0;
+    }
+
+
+    @Override
+    abstract public InputStream getInputStream() throws IOException;
+
+    @Override
+    abstract public OutputStream getOutputStream() throws IOException;
+
+    @Override
+    abstract public void rename(CharSequence newName) throws IOException;
+
+    @Override
+    abstract public void delete() throws IOException;
+
+    @Override
+    public void copyTo(Node destNode) throws IOException {
+        FileUtil.copy(this, destNode);
+    }
+    @Override
+    public void moveTo(Node destNode) throws IOException {
+        copyTo(destNode);
+        delete();
+    }
+
+    @Override
+    public String toString() {
+        return "Node["+getNodeType()+":"+getAbsName()+"]";
     }
 }

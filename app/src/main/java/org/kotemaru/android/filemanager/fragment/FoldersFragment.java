@@ -15,78 +15,41 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.kotemaru.android.filemanager.MyApplication;
 import org.kotemaru.android.filemanager.R;
-import org.kotemaru.android.filemanager.activity.MainActivity;
-import org.kotemaru.android.filemanager.logic.ActionManager;
-import org.kotemaru.android.filemanager.model.BookmarkFolderNode;
-import org.kotemaru.android.filemanager.model.ClipFolderNode;
-import org.kotemaru.android.filemanager.model.FileNode;
 import org.kotemaru.android.filemanager.model.Node;
 import org.kotemaru.android.filemanager.model.NodeTree;
-import org.kotemaru.android.filemanager.persistent.Settings;
 import org.kotemaru.android.util.WindowUtil;
 
-import java.io.File;
-import java.util.List;
-
 public class FoldersFragment extends Fragment {
+    private final MyApplication myApp = MyApplication.getInstance();
     private ListView mListView;
     private NodesAdapter mNodesAdapter;
-    private NodeTree mNodeTree;
     private int mIndentPx;
-    private BookmarkFolderNode mBookmarkFolderNode;
-    private ClipFolderNode mClipFolderNode;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_folders, container, false);
         mIndentPx = WindowUtil.dp2px(getActivity(), 10);
 
-        mNodeTree = createNodeTree();
         mNodesAdapter = new NodesAdapter();
-        mNodesAdapter.setNodeTree(mNodeTree);
+        mNodesAdapter.setNodeTree(myApp.getNodeTree());
         mListView = (ListView) view.findViewById(R.id.folders);
         mListView.setAdapter(mNodesAdapter);
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Node node = mNodeTree.select(position);
-                getActionManager().onClick(true, node);
+                Node node = myApp.getNodeTree().select(position);
+                myApp.getActionManager().onClick(true, node);
             }
         });
         registerForContextMenu(mListView);
         return view;
     }
 
-
-    private NodeTree createNodeTree() {
-        mBookmarkFolderNode = new BookmarkFolderNode(null, "Book mark");
-        ;
-        List<Node> folders = Settings.getBookmarks(mBookmarkFolderNode);
-        for (Node folder : folders) {
-            mBookmarkFolderNode.add(folder);
-        }
-        mClipFolderNode = new ClipFolderNode(null, "Clip");
-
-        NodeTree folderTree = new NodeTree();
-        folderTree.addTopLevel(mBookmarkFolderNode);
-        folderTree.addTopLevel(mClipFolderNode);
-        folderTree.addTopLevel(new FileNode(null, new File("/")));
-        folderTree.refresh();
-        return folderTree;
-    }
-
-    public BookmarkFolderNode getBookmarkFolderNode() {
-        return mBookmarkFolderNode;
-    }
-
-    public ClipFolderNode getClipFolderNode() {
-        return mClipFolderNode;
-    }
-
     public void refresh() {
+        myApp.getNodeTree().refresh();
         mNodesAdapter.notifyDataSetChanged();
-        mNodeTree.refresh();
     }
 
     @Override
@@ -136,20 +99,24 @@ public class FoldersFragment extends Fragment {
             ListItemInfo info = (ListItemInfo) view.getTag();
             info.position = position;
 
-            Node folder = getNode(position);
-            info.title.setText(folder.getTitle());
-            view.setPadding(folder.getNestLevel() * mIndentPx, 0, 0, 0);
+            Node node = getNode(position);
+            info.title.setText(node.getTitle());
+            view.setPadding(node.getNestLevel() * mIndentPx, 0, 0, 0);
 
-            info.icon.setImageDrawable(folder.getIcon(getActivity()));
-            info.toggle.setImageResource(folder.isOpened() ? R.drawable.triangle_down : R.drawable.triangle_right);
-            info.toggle.setVisibility(folder.hasChildren() ? View.VISIBLE : View.INVISIBLE);
-            view.setSelected(folder.isSelected());
-            view.setBackgroundColor(folder.isSelected() ? Color.LTGRAY : Color.WHITE); // TODO:リソース化
+            info.icon.setImageDrawable(node.getIcon(getActivity()));
+            info.toggle.setImageResource(node.isOpened() ? R.drawable.triangle_down : R.drawable.triangle_right);
+            info.toggle.setVisibility(node.hasChildren() ? View.VISIBLE : View.INVISIBLE);
+            info.clipped.setVisibility(View.INVISIBLE);
+            info.bookmarked.setVisibility(node.getNodeType() == Node.NodeType.BOOKMARK ? View.VISIBLE : View.INVISIBLE);
 
-            boolean isRead = folder.isReadable();
+            boolean isSelected = myApp.getNodeTree().isSelected(node);
+            view.setSelected(isSelected);
+            view.setBackgroundColor(isSelected ? Color.LTGRAY : Color.WHITE); // TODO:リソース化
+
+            boolean isRead = node.isReadable();
             view.setAlpha(isRead ? 1.0F : 0.2F);
             //info.title.setAlpha(isRead ? 1.0F : 0.2F);
-            boolean isWrite = folder.isWritable();
+            boolean isWrite = node.isWritable();
             info.cannotWrite.setVisibility(isWrite ? View.INVISIBLE : View.VISIBLE);
             return view;
         }
@@ -160,6 +127,8 @@ public class FoldersFragment extends Fragment {
             info.title = (TextView) view.findViewById(R.id.title);
             info.toggle = (ImageView) view.findViewById(R.id.toggle);
             info.icon = (ImageView) view.findViewById(R.id.icon);
+            info.clipped = (ImageView) view.findViewById(R.id.clipped);
+            info.bookmarked = (ImageView) view.findViewById(R.id.bookmarked);
             info.cannotWrite = (ImageView) view.findViewById(R.id.cannotWrite);
             info.toggle.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -180,10 +149,10 @@ public class FoldersFragment extends Fragment {
         ImageView toggle;
         ImageView icon;
         ImageView cannotWrite;
+        ImageView clipped;
+        ImageView bookmarked;
     }
-    private ActionManager getActionManager() {
-        return ((MainActivity)getActivity()).getActionManager();
-    }
+
     @Override
     public void onCreateContextMenu(ContextMenu menu, View view, ContextMenu.ContextMenuInfo menuInfo) {
         Log.d("TAG", "onCreateContextMenu");
@@ -191,7 +160,7 @@ public class FoldersFragment extends Fragment {
         if (view.getId() == R.id.folders) {
             AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) menuInfo;
             Node node = mNodesAdapter.getNode(info.position);
-            getActionManager().createContextMenu(menu, node);
+            myApp.getActionManager().createContextMenu(menu, node);
         }
     }
 
@@ -199,7 +168,7 @@ public class FoldersFragment extends Fragment {
     public boolean onContextItemSelected(MenuItem item) {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         Node node = mNodesAdapter.getNode(info.position);
-        return getActionManager().doMenuAction(item, node);
+        return myApp.getActionManager().doMenuAction(item, node);
     }
 }
 

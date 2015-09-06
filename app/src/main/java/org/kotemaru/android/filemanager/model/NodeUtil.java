@@ -61,7 +61,9 @@ public class NodeUtil {
             case CLIP:
                 return new ClipNode(parent, createNodeFromUrl(parent, uri.getQuery()));
             case BOOKMARK:
-                return new ClipNode(parent, createNodeFromUrl(parent, uri.getQuery()));
+                return new BookmarkNode(parent, createNodeFromUrl(parent, uri.getQuery()));
+            case BOOKMARK_FOLDER:
+                return new BookmarkFolderNode(parent, uri.getPath().substring(1));
             case LOCAL_FILE:
                 return new FileNode(parent, new File(uri.getPath()));
             default:
